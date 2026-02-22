@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:ui';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -17,37 +18,66 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = isDarkMode ? Color(0xFF2D2D2D) : Color(0xFF2D2D2D);
-    
     return Container(
-      height: 55.h,
-      decoration: BoxDecoration(
-        color: bgColor,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
+      height: 70.h,
       child: Stack(
         children: [
+          // Base layer
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Color(0xFF1A1F36),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Glass layer
+          Positioned.fill(
+            child: ClipRRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withValues(alpha: 0.1),
+                        Colors.white.withValues(alpha: 0.05),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          
+          // Pink wave indicator
           CustomPaint(
-            size: Size(MediaQuery.of(context).size.width, 55.h),
-            painter: WavePainter(
+            size: Size(MediaQuery.of(context).size.width, 70.h),
+            painter: MultiLayerWavePainter(
               currentIndex: currentIndex,
               itemCount: 3,
             ),
           ),
           
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(icon: Icons.home_rounded, index: 0),
-              _buildNavItem(icon: Icons.show_chart_rounded, index: 1),
-              _buildNavItem(icon: Icons.settings_rounded, index: 2),
-            ],
+          // Navigation items
+          Positioned.fill(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(icon: Icons.home_rounded, index: 0),
+                _buildNavItem(icon: Icons.show_chart_rounded, index: 1),
+                _buildNavItem(icon: Icons.settings_rounded, index: 2),
+              ],
+            ),
           ),
         ],
       ),
@@ -64,14 +94,35 @@ class CustomBottomNavBar extends StatelessWidget {
       child: InkWell(
         onTap: () => onTap(index),
         child: Container(
-          height: 55.h,
+          height: 70.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
-                size: 22.sp,
+              AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                padding: EdgeInsets.all(isSelected ? 10.w : 8.w),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: isSelected
+                      ? LinearGradient(
+                          colors: [Color(0xFFE91E63), Color(0xFFFF6B9D)],
+                        )
+                      : null,
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Color(0xFFE91E63).withValues(alpha: 0.5),
+                            blurRadius: 15,
+                            spreadRadius: 2,
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: isSelected ? 26.sp : 22.sp,
+                ),
               ),
             ],
           ),
@@ -81,65 +132,92 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 }
 
-class WavePainter extends CustomPainter {
+class MultiLayerWavePainter extends CustomPainter {
   final int currentIndex;
   final int itemCount;
 
-  WavePainter({
+  MultiLayerWavePainter({
     required this.currentIndex,
     required this.itemCount,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Color(0xFFE91E63)
-      ..style = PaintingStyle.fill;
-
     final itemWidth = size.width / itemCount;
     final centerX = (currentIndex + 0.5) * itemWidth;
     
+    // Layer 1 - Outer glow
+    final glowPaint = Paint()
+      ..color = Color(0xFFE91E63).withValues(alpha: 0.2)
+      ..style = PaintingStyle.fill
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 15);
+    
+    final glowPath = _createWavePath(centerX, itemWidth, -22, 8);
+    canvas.drawPath(glowPath, glowPaint);
+    
+    // Layer 2 - Main wave
+    final mainPaint = Paint()
+      ..shader = LinearGradient(
+        colors: [Color(0xFFE91E63), Color(0xFFFF6B9D)],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
+    
+    final mainPath = _createWavePath(centerX, itemWidth, -18, 6);
+    canvas.drawPath(mainPath, mainPaint);
+    
+    // Layer 3 - Inner highlight
+    final highlightPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.3)
+      ..style = PaintingStyle.fill;
+    
+    final highlightPath = _createWavePath(centerX, itemWidth, -16, 4);
+    canvas.drawPath(highlightPath, highlightPaint);
+  }
+
+  Path _createWavePath(double centerX, double itemWidth, double peakHeight, double bottomHeight) {
     final path = Path();
     
     path.moveTo(centerX - itemWidth * 0.5, 0);
     
     path.quadraticBezierTo(
       centerX - itemWidth * 0.25,
-      -10,
+      peakHeight * 0.7,
       centerX,
-      -14,
+      peakHeight,
     );
     
     path.quadraticBezierTo(
       centerX + itemWidth * 0.25,
-      -10,
+      peakHeight * 0.7,
       centerX + itemWidth * 0.5,
       0,
     );
     
-    path.lineTo(centerX + itemWidth * 0.5, 5);
+    path.lineTo(centerX + itemWidth * 0.5, bottomHeight);
     
     path.quadraticBezierTo(
       centerX + itemWidth * 0.25,
-      3,
+      bottomHeight * 0.6,
       centerX,
-      2,
+      bottomHeight * 0.4,
     );
     
     path.quadraticBezierTo(
       centerX - itemWidth * 0.25,
-      3,
+      bottomHeight * 0.6,
       centerX - itemWidth * 0.5,
-      5,
+      bottomHeight,
     );
     
     path.close();
     
-    canvas.drawPath(path, paint);
+    return path;
   }
 
   @override
-  bool shouldRepaint(WavePainter oldDelegate) {
+  bool shouldRepaint(MultiLayerWavePainter oldDelegate) {
     return oldDelegate.currentIndex != currentIndex;
   }
 }
