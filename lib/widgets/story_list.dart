@@ -54,8 +54,10 @@ class StoryList extends StatelessWidget {
               gradient: hasStory
                   ? LinearGradient(
                       colors: [
-                        Color(0xFFE91E63),
-                        Color(0xFFFF6B9D),
+                        Color(0xFFFFD700),
+                        Color(0xFFFFE55C),
+                        Color(0xFF9D4EDD),
+                        Color(0xFF7B2CBF),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -63,25 +65,34 @@ class StoryList extends StatelessWidget {
                   : null,
               border: !hasStory
                   ? Border.all(
-                      color: isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                      color: isDarkMode ? Color(0xFF9D4EDD).withValues(alpha: 0.3) : Color(0xFF9D4EDD).withValues(alpha: 0.2),
                       width: 2,
                     )
                   : null,
+              boxShadow: hasStory
+                  ? [
+                      BoxShadow(
+                        color: Color(0xFF9D4EDD).withValues(alpha: 0.4),
+                        blurRadius: 15,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : [],
             ),
             padding: EdgeInsets.all(3),
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                color: isDarkMode ? Color(0xFF1A0B2E) : Colors.grey[50],
                 border: Border.all(
-                  color: isDarkMode ? Color(0xFF1A1A1A) : Colors.white,
+                  color: isDarkMode ? Color(0xFF0A0015) : Colors.white,
                   width: 2,
                 ),
               ),
               child: Center(
                 child: Icon(
                   Icons.show_chart_rounded,
-                  color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
+                  color: Color(0xFF9D4EDD),
                   size: 24.sp,
                 ),
               ),
@@ -97,7 +108,8 @@ class StoryList extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 12.sp,
-                color: isDarkMode ? Colors.grey[400] : Colors.black87,
+                color: isDarkMode ? Colors.white.withValues(alpha: 0.8) : Colors.black87,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: _isDarkMode ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: Color(0xFF1A1F36),
+        systemNavigationBarColor: Color(0xFF0A0015),
         systemNavigationBarIconBrightness: Brightness.light,
       ),
     );
@@ -70,8 +70,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: _isDarkMode
-                ? [Color(0xFF0A0E27), Color(0xFF1A1F36), Color(0xFF2D3561)]
-                : [Color(0xFFF8F9FE), Color(0xFFEEF1FF), Color(0xFFE0E7FF)],
+                ? [Color(0xFF0A0015), Color(0xFF1A0B2E), Color(0xFF2D1B4E)]
+                : [Color(0xFFFAF5FF), Color(0xFFF3E8FF), Color(0xFFE9D5FF)],
           ),
         ),
         child: SafeArea(
@@ -124,13 +124,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   return ShaderMask(
                     shaderCallback: (bounds) => LinearGradient(
                       colors: [
-                        Color(0xFFE91E63),
-                        Color(0xFFFF6B9D),
-                        Color(0xFFFFB6C1),
+                        Color(0xFFFFD700),
+                        Color(0xFFFFE55C),
+                        Color(0xFFFFD700),
+                        Color(0xFF9D4EDD),
+                        Color(0xFF7B2CBF),
                       ],
                       stops: [
                         _animationController.value - 0.3,
+                        _animationController.value - 0.1,
                         _animationController.value,
+                        _animationController.value + 0.1,
                         _animationController.value + 0.3,
                       ].map((e) => e.clamp(0.0, 1.0)).toList(),
                     ).createShader(bounds),
@@ -319,9 +323,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _buildStatItem('85%', isRTL ? 'موفق' : 'Success', Colors.green),
-                  _buildStatItem('24', isRTL ? 'فعال' : 'Active', Color(0xFFE91E63)),
-                  _buildStatItem('156', isRTL ? 'کل' : 'Total', Colors.blue),
+                  _buildStatItem('85%', isRTL ? 'موفق' : 'Success', Color(0xFF10B981)),
+                  _buildStatItem('24', isRTL ? 'فعال' : 'Active', Color(0xFF9D4EDD)),
+                  _buildStatItem('156', isRTL ? 'کل' : 'Total', Color(0xFFFFD700)),
                 ],
               ),
             ],
@@ -416,12 +420,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           height: 60.h,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFE91E63), Color(0xFFFF6B9D)],
+              colors: [Color(0xFFFFD700), Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
             ),
             borderRadius: BorderRadius.circular(18.r),
             boxShadow: [
               BoxShadow(
-                color: Color(0xFFE91E63).withValues(alpha: 0.3),
+                color: Color(0xFF9D4EDD).withValues(alpha: 0.4),
                 blurRadius: 12,
                 offset: Offset(0, 4),
               ),
@@ -486,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   _isDarkMode = value;
                 });
               },
-              activeColor: Color(0xFFE91E63),
+              activeColor: Color(0xFF9D4EDD),
             ),
             isRTL: isRTL,
           ),
