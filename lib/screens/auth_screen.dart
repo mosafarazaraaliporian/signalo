@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/localization/app_localizations.dart';
+import 'home_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   final String languageCode;
@@ -118,7 +119,14 @@ class _AuthScreenState extends State<AuthScreen> {
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomeScreen(languageCode: widget.languageCode),
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
                         foregroundColor: Colors.white,
