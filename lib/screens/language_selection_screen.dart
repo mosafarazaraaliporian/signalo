@@ -12,8 +12,38 @@ class LanguageSelectionScreen extends StatefulWidget {
   State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
 }
 
-class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
+class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with SingleTickerProviderStateMixin {
   String _selectedLanguage = 'fa';
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,90 +62,106 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.language_rounded,
-                size: 64.sp,
-                color: Colors.black,
-              ),
-              
-              SizedBox(height: 24.h),
-              
-              Text(
-                'Select Language',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              
-              SizedBox(height: 8.h),
-              
-              Text(
-                'انتخاب زبان',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  color: Colors.grey[600],
-                ),
-              ),
-              
-              SizedBox(height: 40.h),
-              
-              _buildLanguageOption('fa', 'فارسی', '🇮🇷'),
-              SizedBox(height: 12.h),
-              _buildLanguageOption('en', 'English', '🇬🇧'),
-              
-              SizedBox(height: 40.h),
-              
-              SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    await LanguageService.setLanguage(_selectedLanguage);
-                    final isDark = await ThemeService.isDarkMode();
-                    if (mounted) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => OnboardingScreen(
-                            languageCode: _selectedLanguage,
-                            isDarkMode: isDark,
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.r),
+          padding: EdgeInsets.symmetric(horizontal: 32.w),
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100.w,
+                    height: 100.h,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black,
                     ),
-                    elevation: 0,
+                    child: Icon(
+                      Icons.language_rounded,
+                      size: 50.sp,
+                      color: Colors.white,
+                    ),
                   ),
-                  child: Text(
-                    _selectedLanguage == 'fa' ? 'ادامه' : 'Continue',
+                  
+                  SizedBox(height: 40.h),
+                  
+                  Text(
+                    'Choose Your Language',
                     style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 26.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
-                ),
+                  
+                  SizedBox(height: 8.h),
+                  
+                  Text(
+                    'زبان خود را انتخاب کنید',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  
+                  SizedBox(height: 50.h),
+                  
+                  _buildLanguageCard('en', 'English', '🇬🇧'),
+                  SizedBox(height: 16.h),
+                  _buildLanguageCard('fa', 'فارسی', '🇮🇷'),
+                  
+                  SizedBox(height: 50.h),
+                  
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54.h,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await LanguageService.setLanguage(_selectedLanguage);
+                        final isDark = await ThemeService.isDarkMode();
+                        if (mounted) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OnboardingScreen(
+                                languageCode: _selectedLanguage,
+                                isDarkMode: isDark,
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(27.r),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        _selectedLanguage == 'fa' ? 'ادامه' : 'Continue',
+                        style: TextStyle(
+                          fontSize: 17.sp,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildLanguageOption(String code, String name, String flag) {
+  Widget _buildLanguageCard(String code, String name, String flag) {
     final isSelected = _selectedLanguage == code;
+    final isRTL = code == 'fa';
     
     return GestureDetector(
       onTap: () {
@@ -123,28 +169,47 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
           _selectedLanguage = code;
         });
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.all(20.w),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.white,
-          borderRadius: BorderRadius.circular(16.r),
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [Colors.black, Color(0xFF2D2D2D)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : null,
+          color: isSelected ? null : Colors.grey[50],
+          borderRadius: BorderRadius.circular(20.r),
           border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey[300]!,
-            width: 1.5,
+            color: isSelected ? Colors.black : Colors.grey[200]!,
+            width: 2,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
+                  ),
+                ]
+              : [],
         ),
         child: Row(
+          textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
           children: [
             Text(
               flag,
-              style: TextStyle(fontSize: 28.sp),
+              style: TextStyle(fontSize: 32.sp),
             ),
             SizedBox(width: 16.w),
             Expanded(
               child: Text(
                 name,
+                textAlign: isRTL ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
-                  fontSize: 16.sp,
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
                   color: isSelected ? Colors.white : Colors.black,
                 ),
@@ -152,9 +217,9 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
             ),
             if (isSelected)
               Icon(
-                Icons.check_circle,
+                Icons.check_circle_rounded,
                 color: Colors.white,
-                size: 24.sp,
+                size: 26.sp,
               ),
           ],
         ),

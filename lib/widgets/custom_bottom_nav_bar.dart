@@ -20,7 +20,7 @@ class CustomBottomNavBar extends StatelessWidget {
     final bgColor = isDarkMode ? Color(0xFF2D2D2D) : Color(0xFF2D2D2D);
     
     return Container(
-      height: 60.h,
+      height: 55.h,
       decoration: BoxDecoration(
         color: bgColor,
         boxShadow: [
@@ -34,10 +34,10 @@ class CustomBottomNavBar extends StatelessWidget {
       child: Stack(
         children: [
           CustomPaint(
-            size: Size(MediaQuery.of(context).size.width, 60.h),
+            size: Size(MediaQuery.of(context).size.width, 55.h),
             painter: WavePainter(
               currentIndex: currentIndex,
-              itemCount: 4,
+              itemCount: 3,
             ),
           ),
           
@@ -45,9 +45,8 @@ class CustomBottomNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(icon: Icons.home_rounded, index: 0),
-              _buildNavItem(icon: Icons.insert_chart_outlined_rounded, index: 1),
-              _buildNavItem(icon: Icons.bar_chart_rounded, index: 2),
-              _buildNavItem(icon: Icons.person_outline_rounded, index: 3),
+              _buildNavItem(icon: Icons.show_chart_rounded, index: 1),
+              _buildNavItem(icon: Icons.settings_rounded, index: 2),
             ],
           ),
         ],
@@ -65,14 +64,14 @@ class CustomBottomNavBar extends StatelessWidget {
       child: InkWell(
         onTap: () => onTap(index),
         child: Container(
-          height: 60.h,
+          height: 55.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
                 color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
-                size: 24.sp,
+                size: 22.sp,
               ),
             ],
           ),
@@ -102,36 +101,36 @@ class WavePainter extends CustomPainter {
     
     final path = Path();
     
-    path.moveTo(centerX - itemWidth * 0.6, 0);
+    path.moveTo(centerX - itemWidth * 0.5, 0);
     
     path.quadraticBezierTo(
-      centerX - itemWidth * 0.3,
-      -12,
+      centerX - itemWidth * 0.25,
+      -10,
       centerX,
-      -16,
+      -14,
     );
     
     path.quadraticBezierTo(
-      centerX + itemWidth * 0.3,
-      -12,
-      centerX + itemWidth * 0.6,
+      centerX + itemWidth * 0.25,
+      -10,
+      centerX + itemWidth * 0.5,
       0,
     );
     
-    path.lineTo(centerX + itemWidth * 0.6, 6);
+    path.lineTo(centerX + itemWidth * 0.5, 5);
     
     path.quadraticBezierTo(
-      centerX + itemWidth * 0.3,
-      4,
+      centerX + itemWidth * 0.25,
+      3,
       centerX,
       2,
     );
     
     path.quadraticBezierTo(
-      centerX - itemWidth * 0.3,
-      4,
-      centerX - itemWidth * 0.6,
-      6,
+      centerX - itemWidth * 0.25,
+      3,
+      centerX - itemWidth * 0.5,
+      5,
     );
     
     path.close();

@@ -9,7 +9,7 @@ class StoryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90.h,
+      height: 100.h,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -47,8 +47,8 @@ class StoryList extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 56.w,
-            height: 56.h,
+            width: 68.w,
+            height: 68.h,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: hasStory
@@ -68,7 +68,7 @@ class StoryList extends StatelessWidget {
                     )
                   : null,
             ),
-            padding: EdgeInsets.all(2),
+            padding: EdgeInsets.all(3),
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -82,21 +82,21 @@ class StoryList extends StatelessWidget {
                 child: Icon(
                   Icons.show_chart_rounded,
                   color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
-                  size: 20.sp,
+                  size: 24.sp,
                 ),
               ),
             ),
           ),
-          SizedBox(height: 4.h),
+          SizedBox(height: 6.h),
           SizedBox(
-            width: 56.w,
+            width: 68.w,
             child: Text(
               title,
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 11.sp,
+                fontSize: 12.sp,
                 color: isDarkMode ? Colors.grey[400] : Colors.black87,
               ),
             ),

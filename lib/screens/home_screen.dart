@@ -78,19 +78,20 @@ class _HomeScreenState extends State<HomeScreen> {
         return _buildSignalsTab(textColor);
       case 2:
         return _buildSettingsTab(textColor);
-      case 3:
-        return _buildProfileTab(textColor);
       default:
         return _buildHomeTab(textColor);
     }
   }
 
   Widget _buildHomeTab(Color textColor) {
+    final isRTL = _languageCode == 'fa';
+    
     return Column(
       children: [
         Padding(
           padding: EdgeInsets.all(16.w),
           child: Row(
+            textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -101,16 +102,27 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: textColor,
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.notifications_outlined, color: textColor, size: 24.sp),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NotificationsScreen(isDarkMode: _isDarkMode),
-                    ),
-                  );
-                },
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.telegram, color: textColor, size: 24.sp),
+                    onPressed: () {
+                      // Open Telegram channel
+                      // TODO: Add url_launcher package and open telegram link
+                    },
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.notifications_outlined, color: textColor, size: 24.sp),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NotificationsScreen(isDarkMode: _isDarkMode),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -132,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 SizedBox(height: 12.h),
                 Text(
-                  'Signals will appear here',
+                  isRTL ? 'سیگنال‌ها اینجا نمایش داده می‌شوند' : 'Signals will appear here',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: _isDarkMode ? Colors.grey[600] : Colors.grey[600],
@@ -147,6 +160,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSignalsTab(Color textColor) {
+    final isRTL = _languageCode == 'fa';
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -158,7 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: 12.h),
           Text(
-            'Signals',
+            isRTL ? 'سیگنال‌ها' : 'Signals',
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18.sp,
               color: _isDarkMode ? Colors.grey[600] : Colors.grey[600],
@@ -170,36 +186,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSettingsTab(Color textColor) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.settings_rounded,
-            size: 64.sp,
-            color: _isDarkMode ? Colors.grey[700] : Colors.grey[300],
-          ),
-          SizedBox(height: 12.h),
-          Text(
-            'Settings',
-            style: TextStyle(
-              fontSize: 18.sp,
-              color: _isDarkMode ? Colors.grey[600] : Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileTab(Color textColor) {
+    final isRTL = _languageCode == 'fa';
+    
     return SingleChildScrollView(
       padding: EdgeInsets.all(20.w),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: isRTL ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
-            'Profile',
+            isRTL ? 'تنظیمات' : 'Settings',
+            textAlign: isRTL ? TextAlign.right : TextAlign.left,
             style: TextStyle(
               fontSize: 24.sp,
               fontWeight: FontWeight.bold,
@@ -210,8 +206,22 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 24.h),
           
           _buildSettingItem(
+            icon: Icons.person_outline_rounded,
+            title: isRTL ? 'پروفایل' : 'Profile',
+            trailing: Icon(
+              isRTL ? Icons.arrow_back_ios : Icons.arrow_forward_ios,
+              color: textColor.withValues(alpha: 0.5),
+              size: 18.sp,
+            ),
+            textColor: textColor,
+            isRTL: isRTL,
+          ),
+          
+          SizedBox(height: 12.h),
+          
+          _buildSettingItem(
             icon: Icons.dark_mode_outlined,
-            title: 'Dark Mode',
+            title: isRTL ? 'حالت شب' : 'Dark Mode',
             trailing: Switch(
               value: _isDarkMode,
               onChanged: (value) async {
@@ -223,13 +233,14 @@ class _HomeScreenState extends State<HomeScreen> {
               activeColor: Colors.black,
             ),
             textColor: textColor,
+            isRTL: isRTL,
           ),
           
           SizedBox(height: 12.h),
           
           _buildSettingItem(
             icon: Icons.language_outlined,
-            title: 'Language',
+            title: isRTL ? 'زبان' : 'Language',
             trailing: DropdownButton<String>(
               value: _languageCode,
               underline: SizedBox(),
@@ -250,6 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             textColor: textColor,
+            isRTL: isRTL,
           ),
         ],
       ),
@@ -261,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required String title,
     required Widget trailing,
     required Color textColor,
+    required bool isRTL,
   }) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
@@ -269,12 +282,14 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
+        textDirection: isRTL ? TextDirection.rtl : TextDirection.ltr,
         children: [
           Icon(icon, color: textColor, size: 22.sp),
           SizedBox(width: 12.w),
           Expanded(
             child: Text(
               title,
+              textAlign: isRTL ? TextAlign.right : TextAlign.left,
               style: TextStyle(
                 fontSize: 15.sp,
                 color: textColor,
