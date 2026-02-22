@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/localization/app_localizations.dart';
 import 'home_screen.dart';
 
 class AuthScreen extends StatefulWidget {
   final String languageCode;
+  final bool isDarkMode;
   
-  const AuthScreen({super.key, required this.languageCode});
+  const AuthScreen({
+    super.key,
+    required this.languageCode,
+    required this.isDarkMode,
+  });
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -23,11 +30,28 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: Size(375, 812));
+    
+    final bgColor = widget.isDarkMode ? Color(0xFF1A1A1A) : Colors.white;
+    final textColor = widget.isDarkMode ? Colors.white : Colors.black;
+    final subtextColor = widget.isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    final fieldBg = widget.isDarkMode ? Colors.grey[850] : Colors.grey[100];
+    
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: widget.isDarkMode ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: bgColor,
+        systemNavigationBarIconBrightness: widget.isDarkMode ? Brightness.light : Brightness.dark,
+      ),
+    );
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             children: [
               Expanded(
@@ -35,62 +59,68 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 60),
+                      SizedBox(height: 40.h),
                       
-                      // Title
                       Text(
                         _isLogin
                             ? _localizations.translate('welcome_back')
                             : _localizations.translate('create_account'),
                         style: TextStyle(
-                          fontSize: 32,
+                          fontSize: 28.sp,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: textColor,
                         ),
                       ),
                       
-                      SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       
                       Text(
                         _isLogin
                             ? _localizations.translate('login_subtitle')
                             : _localizations.translate('signup_subtitle'),
                         style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
+                          fontSize: 14.sp,
+                          color: subtextColor,
                         ),
                       ),
                       
-                      SizedBox(height: 40),
+                      SizedBox(height: 32.h),
                       
-                      // Form
                       if (!_isLogin)
                         _buildTextField(
                           label: _localizations.translate('full_name'),
+                          fieldBg: fieldBg!,
+                          textColor: textColor,
                         ),
                       
-                      if (!_isLogin) SizedBox(height: 16),
+                      if (!_isLogin) SizedBox(height: 12.h),
                       
                       _buildTextField(
                         label: _localizations.translate('email'),
+                        fieldBg: fieldBg!,
+                        textColor: textColor,
                       ),
                       
-                      SizedBox(height: 16),
+                      SizedBox(height: 12.h),
                       
                       _buildTextField(
                         label: _localizations.translate('password'),
                         isPassword: true,
+                        fieldBg: fieldBg,
+                        textColor: textColor,
                       ),
                       
-                      if (!_isLogin) SizedBox(height: 16),
+                      if (!_isLogin) SizedBox(height: 12.h),
                       
                       if (!_isLogin)
                         _buildTextField(
                           label: _localizations.translate('confirm_password'),
                           isPassword: true,
+                          fieldBg: fieldBg,
+                          textColor: textColor,
                         ),
                       
-                      if (_isLogin) SizedBox(height: 12),
+                      if (_isLogin) SizedBox(height: 8.h),
                       
                       if (_isLogin)
                         Align(
@@ -100,8 +130,8 @@ class _AuthScreenState extends State<AuthScreen> {
                             child: Text(
                               _localizations.translate('forgot_password'),
                               style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 14,
+                                color: textColor,
+                                fontSize: 13.sp,
                               ),
                             ),
                           ),
@@ -111,27 +141,28 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               
-              // Bottom buttons
               Column(
                 children: [
-                  // Main button
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 50.h,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => HomeScreen(languageCode: widget.languageCode),
+                            builder: (context) => HomeScreen(
+                              languageCode: widget.languageCode,
+                              isDarkMode: widget.isDarkMode,
+                            ),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: textColor,
+                        foregroundColor: bgColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(25.r),
                         ),
                         elevation: 0,
                       ),
@@ -140,19 +171,18 @@ class _AuthScreenState extends State<AuthScreen> {
                             ? _localizations.translate('login')
                             : _localizations.translate('sign_up'),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
                   
-                  SizedBox(height: 16),
+                  SizedBox(height: 12.h),
                   
-                  // Secondary button
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 50.h,
                     child: OutlinedButton(
                       onPressed: () {
                         setState(() {
@@ -160,10 +190,10 @@ class _AuthScreenState extends State<AuthScreen> {
                         });
                       },
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        side: BorderSide(color: Colors.black, width: 1.5),
+                        foregroundColor: textColor,
+                        side: BorderSide(color: textColor, width: 1.5),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(25.r),
                         ),
                       ),
                       child: Text(
@@ -171,14 +201,14 @@ class _AuthScreenState extends State<AuthScreen> {
                             ? _localizations.translate('sign_up')
                             : _localizations.translate('login'),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
                   
-                  SizedBox(height: 24),
+                  SizedBox(height: 20.h),
                 ],
               ),
             ],
@@ -191,28 +221,33 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget _buildTextField({
     required String label,
     bool isPassword = false,
+    required Color fieldBg,
+    required Color textColor,
   }) {
     return TextField(
       obscureText: isPassword,
-      style: TextStyle(color: Colors.black),
+      style: TextStyle(color: textColor, fontSize: 14.sp),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.grey[600]),
+        labelStyle: TextStyle(
+          color: widget.isDarkMode ? Colors.grey[500] : Colors.grey[600],
+          fontSize: 14.sp,
+        ),
         filled: true,
-        fillColor: Colors.grey[100],
+        fillColor: fieldBg,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.black, width: 1.5),
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: textColor, width: 1.5),
         ),
-        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       ),
     );
   }

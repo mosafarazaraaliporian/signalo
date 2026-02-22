@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/services/language_service.dart';
+import '../core/services/theme_service.dart';
 import 'onboarding_screen.dart';
 
 class LanguageSelectionScreen extends StatefulWidget {
@@ -14,58 +17,75 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: Size(375, 812));
+    
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.language,
-                size: 80,
+                Icons.language_rounded,
+                size: 64.sp,
                 color: Colors.black,
               ),
               
-              SizedBox(height: 30),
+              SizedBox(height: 24.h),
               
               Text(
                 'Select Language',
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 24.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                 ),
               ),
               
+              SizedBox(height: 8.h),
+              
               Text(
                 'انتخاب زبان',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 16.sp,
                   color: Colors.grey[600],
                 ),
               ),
               
-              SizedBox(height: 50),
+              SizedBox(height: 40.h),
               
-              _buildLanguageOption('fa', 'فارسی', 'Persian'),
-              SizedBox(height: 16),
-              _buildLanguageOption('en', 'English', 'انگلیسی'),
+              _buildLanguageOption('fa', 'فارسی', '🇮🇷'),
+              SizedBox(height: 12.h),
+              _buildLanguageOption('en', 'English', '🇬🇧'),
               
-              SizedBox(height: 50),
+              SizedBox(height: 40.h),
               
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: 50.h,
                 child: ElevatedButton(
                   onPressed: () async {
                     await LanguageService.setLanguage(_selectedLanguage);
+                    final isDark = await ThemeService.isDarkMode();
                     if (mounted) {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => OnboardingScreen(languageCode: _selectedLanguage),
+                          builder: (context) => OnboardingScreen(
+                            languageCode: _selectedLanguage,
+                            isDarkMode: isDark,
+                          ),
                         ),
                       );
                     }
@@ -74,14 +94,14 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
+                      borderRadius: BorderRadius.circular(25.r),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
                     _selectedLanguage == 'fa' ? 'ادامه' : 'Continue',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -94,7 +114,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     );
   }
 
-  Widget _buildLanguageOption(String code, String primary, String secondary) {
+  Widget _buildLanguageOption(String code, String name, String flag) {
     final isSelected = _selectedLanguage == code;
     
     return GestureDetector(
@@ -104,63 +124,38 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
         });
       },
       child: Container(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.grey[100] : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: isSelected ? Colors.black : Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: isSelected ? Colors.black : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
+            width: 1.5,
           ),
         ),
         child: Row(
           children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? Colors.black : Colors.grey[400]!,
-                  width: 2,
+            Text(
+              flag,
+              style: TextStyle(fontSize: 28.sp),
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.white : Colors.black,
                 ),
               ),
-              child: isSelected
-                  ? Center(
-                      child: Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black,
-                        ),
-                      ),
-                    )
-                  : null,
             ),
-            SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    primary,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    secondary,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
+            if (isSelected)
+              Icon(
+                Icons.check_circle,
+                color: Colors.white,
+                size: 24.sp,
               ),
-            ),
           ],
         ),
       ),

@@ -1,60 +1,53 @@
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
   final String languageCode;
+  final bool isDarkMode;
 
   const CustomBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
     required this.languageCode,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = isDarkMode ? Color(0xFF2D2D2D) : Color(0xFF2D2D2D);
+    
     return Container(
-      height: 65,
+      height: 60.h,
+      decoration: BoxDecoration(
+        color: bgColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
       child: Stack(
         children: [
-          // Background
-          Positioned.fill(
-            child: Container(
-              color: Color(0xFF2D2D2D),
-            ),
-          ),
-          
-          // Pink wave indicator
           CustomPaint(
-            size: Size(MediaQuery.of(context).size.width, 65),
+            size: Size(MediaQuery.of(context).size.width, 60.h),
             painter: WavePainter(
               currentIndex: currentIndex,
               itemCount: 4,
             ),
           ),
           
-          // Navigation items
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(
-                icon: Icons.home_rounded,
-                index: 0,
-              ),
-              _buildNavItem(
-                icon: Icons.insert_chart_outlined_rounded,
-                index: 1,
-              ),
-              _buildNavItem(
-                icon: Icons.bar_chart_rounded,
-                index: 2,
-              ),
-              _buildNavItem(
-                icon: Icons.refresh_rounded,
-                index: 3,
-              ),
+              _buildNavItem(icon: Icons.home_rounded, index: 0),
+              _buildNavItem(icon: Icons.insert_chart_outlined_rounded, index: 1),
+              _buildNavItem(icon: Icons.bar_chart_rounded, index: 2),
+              _buildNavItem(icon: Icons.person_outline_rounded, index: 3),
             ],
           ),
         ],
@@ -72,14 +65,14 @@ class CustomBottomNavBar extends StatelessWidget {
       child: InkWell(
         onTap: () => onTap(index),
         child: Container(
-          height: 65,
+          height: 60.h,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
                 color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.5),
-                size: 28,
+                size: 24.sp,
               ),
             ],
           ),
@@ -109,39 +102,36 @@ class WavePainter extends CustomPainter {
     
     final path = Path();
     
-    // Start from left
     path.moveTo(centerX - itemWidth * 0.6, 0);
     
-    // Create wave curve
     path.quadraticBezierTo(
       centerX - itemWidth * 0.3,
-      -15,
+      -12,
       centerX,
-      -20,
+      -16,
     );
     
     path.quadraticBezierTo(
       centerX + itemWidth * 0.3,
-      -15,
+      -12,
       centerX + itemWidth * 0.6,
       0,
     );
     
-    // Complete the shape
-    path.lineTo(centerX + itemWidth * 0.6, 8);
+    path.lineTo(centerX + itemWidth * 0.6, 6);
     
     path.quadraticBezierTo(
       centerX + itemWidth * 0.3,
-      5,
+      4,
       centerX,
-      3,
+      2,
     );
     
     path.quadraticBezierTo(
       centerX - itemWidth * 0.3,
-      5,
+      4,
       centerX - itemWidth * 0.6,
-      8,
+      6,
     );
     
     path.close();

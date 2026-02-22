@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../core/localization/app_localizations.dart';
 import 'auth_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   final String languageCode;
+  final bool isDarkMode;
   
-  const OnboardingScreen({super.key, required this.languageCode});
+  const OnboardingScreen({
+    super.key,
+    required this.languageCode,
+    required this.isDarkMode,
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -30,23 +38,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: Size(375, 812));
+    
+    final bgColor = widget.isDarkMode ? Color(0xFF1A1A1A) : Colors.white;
+    final textColor = widget.isDarkMode ? Colors.white : Colors.black;
+    final subtextColor = widget.isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: widget.isDarkMode ? Brightness.light : Brightness.dark,
+        systemNavigationBarColor: bgColor,
+        systemNavigationBarIconBrightness: widget.isDarkMode ? Brightness.light : Brightness.dark,
+      ),
+    );
+
     final pages = [
       _buildPage(
         title: _localizations.translate('onboarding_title_1'),
         description: _localizations.translate('onboarding_desc_1'),
+        textColor: textColor,
+        subtextColor: subtextColor!,
       ),
       _buildPage(
         title: _localizations.translate('onboarding_title_2'),
         description: _localizations.translate('onboarding_desc_2'),
+        textColor: textColor,
+        subtextColor: subtextColor,
       ),
       _buildPage(
         title: _localizations.translate('onboarding_title_3'),
         description: _localizations.translate('onboarding_desc_3'),
+        textColor: textColor,
+        subtextColor: subtextColor,
       ),
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -63,32 +92,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(20.w),
               child: Column(
                 children: [
-                  // Page indicators
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      3,
-                      (index) => Container(
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        width: _currentPage == index ? 32 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _currentPage == index ? Colors.black : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
+                  SmoothPageIndicator(
+                    controller: _pageController,
+                    count: 3,
+                    effect: WormEffect(
+                      dotColor: widget.isDarkMode ? Colors.grey[700]! : Colors.grey[300]!,
+                      activeDotColor: textColor,
+                      dotHeight: 8.h,
+                      dotWidth: 8.w,
                     ),
                   ),
                   
-                  SizedBox(height: 32),
+                  SizedBox(height: 24.h),
                   
-                  // Get started button
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 50.h,
                     child: ElevatedButton(
                       onPressed: () {
                         if (_currentPage < 2) {
@@ -100,57 +122,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => AuthScreen(languageCode: widget.languageCode),
+                              builder: (context) => AuthScreen(
+                                languageCode: widget.languageCode,
+                                isDarkMode: widget.isDarkMode,
+                              ),
                             ),
                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        foregroundColor: Colors.white,
+                        backgroundColor: textColor,
+                        foregroundColor: bgColor,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
+                          borderRadius: BorderRadius.circular(25.r),
                         ),
                         elevation: 0,
                       ),
                       child: Text(
-                        _currentPage < 2
-                            ? _localizations.translate('next')
-                            : _localizations.translate('get_started'),
+                        _localizations.translate('next'),
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                   ),
-                  
-                  if (_currentPage < 2) SizedBox(height: 16),
-                  
-                  // Log in button
-                  if (_currentPage < 2)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AuthScreen(languageCode: widget.languageCode),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          _localizations.translate('login'),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -163,49 +159,50 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget _buildPage({
     required String title,
     required String description,
+    required Color textColor,
+    required Color subtextColor,
   }) {
     return Padding(
-      padding: const EdgeInsets.all(40.0),
+      padding: EdgeInsets.symmetric(horizontal: 32.w),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Placeholder for illustration
           Container(
-            width: 280,
-            height: 280,
+            width: 200.w,
+            height: 200.h,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(20),
+              color: widget.isDarkMode ? Colors.grey[800] : Colors.grey[100],
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Center(
               child: Icon(
-                Icons.image_outlined,
-                size: 80,
-                color: Colors.grey[400],
+                Icons.show_chart_rounded,
+                size: 80.sp,
+                color: widget.isDarkMode ? Colors.grey[600] : Colors.grey[400],
               ),
             ),
           ),
           
-          SizedBox(height: 60),
+          SizedBox(height: 48.h),
           
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 24.sp,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: textColor,
             ),
           ),
           
-          SizedBox(height: 16),
+          SizedBox(height: 16.h),
           
           Text(
             description,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
+              fontSize: 14.sp,
+              color: subtextColor,
               height: 1.5,
             ),
           ),
