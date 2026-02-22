@@ -71,51 +71,51 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 100.w,
-                    height: 100.h,
+                    width: 80.w,
+                    height: 80.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.black,
                     ),
                     child: Icon(
                       Icons.language_rounded,
-                      size: 50.sp,
+                      size: 40.sp,
                       color: Colors.white,
                     ),
                   ),
                   
-                  SizedBox(height: 40.h),
+                  SizedBox(height: 32.h),
                   
                   Text(
                     'Choose Your Language',
                     style: TextStyle(
-                      fontSize: 26.sp,
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
                   ),
                   
-                  SizedBox(height: 8.h),
+                  SizedBox(height: 6.h),
                   
                   Text(
                     'زبان خود را انتخاب کنید',
                     style: TextStyle(
-                      fontSize: 18.sp,
+                      fontSize: 15.sp,
                       color: Colors.grey[600],
                     ),
                   ),
                   
-                  SizedBox(height: 50.h),
+                  SizedBox(height: 40.h),
                   
                   _buildLanguageCard('en', 'English', '🇬🇧'),
-                  SizedBox(height: 16.h),
+                  SizedBox(height: 14.h),
                   _buildLanguageCard('fa', 'فارسی', '🇮🇷'),
                   
-                  SizedBox(height: 50.h),
+                  SizedBox(height: 40.h),
                   
                   SizedBox(
                     width: double.infinity,
-                    height: 54.h,
+                    height: 50.h,
                     child: ElevatedButton(
                       onPressed: () async {
                         await LanguageService.setLanguage(_selectedLanguage);
@@ -143,9 +143,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
                       child: Text(
                         _selectedLanguage == 'fa' ? 'ادامه' : 'Continue',
                         style: TextStyle(
-                          fontSize: 17.sp,
+                          fontSize: 16.sp,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
@@ -171,7 +170,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
       },
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
-        padding: EdgeInsets.all(20.w),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
         decoration: BoxDecoration(
           gradient: isSelected
               ? LinearGradient(
@@ -181,17 +180,17 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
                 )
               : null,
           color: isSelected ? null : Colors.grey[50],
-          borderRadius: BorderRadius.circular(20.r),
+          borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
             color: isSelected ? Colors.black : Colors.grey[200]!,
-            width: 2,
+            width: 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
                   ),
                 ]
               : [],
@@ -201,15 +200,15 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
           children: [
             Text(
               flag,
-              style: TextStyle(fontSize: 32.sp),
+              style: TextStyle(fontSize: 26.sp),
             ),
-            SizedBox(width: 16.w),
+            SizedBox(width: 14.w),
             Expanded(
               child: Text(
                 name,
                 textAlign: isRTL ? TextAlign.right : TextAlign.left,
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
                   color: isSelected ? Colors.white : Colors.black,
                 ),
@@ -219,7 +218,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> with 
               Icon(
                 Icons.check_circle_rounded,
                 color: Colors.white,
-                size: 26.sp,
+                size: 22.sp,
               ),
           ],
         ),
