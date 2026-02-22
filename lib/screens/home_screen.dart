@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/localization/app_localizations.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../widgets/story_list.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final String languageCode;
@@ -56,18 +58,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHomeTab() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.home, size: 80, color: Colors.grey[300]),
-          SizedBox(height: 16),
-          Text(
-            'Home',
-            style: TextStyle(fontSize: 24, color: Colors.grey[600]),
+    return Column(
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Signalo',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.notifications_outlined, color: Colors.black),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        
+        // Stories
+        StoryList(),
+        
+        SizedBox(height: 16),
+        
+        // Content placeholder
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.show_chart, size: 80, color: Colors.grey[300]),
+                SizedBox(height: 16),
+                Text(
+                  'Signals will appear here',
+                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
