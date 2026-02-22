@@ -15,86 +15,79 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1a1a2e),
-              Color(0xFF16213e),
-              Color(0xFF0f3460),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.language,
+                size: 80,
+                color: Colors.black,
+              ),
+              
+              SizedBox(height: 30),
+              
+              Text(
+                'Select Language',
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              
+              Text(
+                'انتخاب زبان',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.grey[600],
+                ),
+              ),
+              
+              SizedBox(height: 50),
+              
+              _buildLanguageOption('fa', 'فارسی', 'Persian'),
+              SizedBox(height: 16),
+              _buildLanguageOption('en', 'English', 'انگلیسی'),
+              
+              SizedBox(height: 50),
+              
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await LanguageService.setLanguage(_selectedLanguage);
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OnboardingScreen(languageCode: _selectedLanguage),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    _selectedLanguage == 'fa' ? 'ادامه' : 'Continue',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
             ],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.language,
-                  size: 80,
-                  color: Color(0xFF00d4ff),
-                ),
-                SizedBox(height: 30),
-                Text(
-                  'Select Language',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                Text(
-                  'انتخاب زبان',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.white70,
-                  ),
-                ),
-                SizedBox(height: 50),
-                
-                _buildLanguageOption('fa', 'فارسی', 'Persian'),
-                SizedBox(height: 16),
-                _buildLanguageOption('en', 'English', 'انگلیسی'),
-                
-                SizedBox(height: 50),
-                
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await LanguageService.setLanguage(_selectedLanguage);
-                      if (mounted) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OnboardingScreen(languageCode: _selectedLanguage),
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF00d4ff),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      _selectedLanguage == 'fa' ? 'ادامه' : 'Continue',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -113,11 +106,11 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
       child: Container(
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF00d4ff).withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+          color: isSelected ? Colors.grey[100] : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? Color(0xFF00d4ff) : Colors.transparent,
-            width: 2,
+            color: isSelected ? Colors.black : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
           ),
         ),
         child: Row(
@@ -128,7 +121,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected ? Color(0xFF00d4ff) : Colors.white30,
+                  color: isSelected ? Colors.black : Colors.grey[400]!,
                   width: 2,
                 ),
               ),
@@ -139,7 +132,7 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                         height: 12,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFF00d4ff),
+                          color: Colors.black,
                         ),
                       ),
                     )
@@ -153,16 +146,16 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
                   Text(
                     primary,
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
                   ),
                   Text(
                     secondary,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white60,
+                      color: Colors.grey[600],
                     ),
                   ),
                 ],

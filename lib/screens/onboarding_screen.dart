@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../core/localization/app_localizations.dart';
 import 'auth_screen.dart';
 
@@ -33,141 +32,135 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final pages = [
       _buildPage(
-        icon: Icons.show_chart,
         title: _localizations.translate('onboarding_title_1'),
         description: _localizations.translate('onboarding_desc_1'),
       ),
       _buildPage(
-        icon: Icons.analytics,
         title: _localizations.translate('onboarding_title_2'),
         description: _localizations.translate('onboarding_desc_2'),
       ),
       _buildPage(
-        icon: Icons.trending_up,
         title: _localizations.translate('onboarding_title_3'),
         description: _localizations.translate('onboarding_desc_3'),
       ),
     ];
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1a1a2e),
-              Color(0xFF16213e),
-              Color(0xFF0f3460),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_currentPage < 2)
-                      TextButton(
-                        onPressed: () {
-                          _pageController.animateToPage(
-                            2,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                children: pages,
+              ),
+            ),
+            
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  // Page indicators
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      3,
+                      (index) => Container(
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        width: _currentPage == index ? 32 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? Colors.black : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  SizedBox(height: 32),
+                  
+                  // Get started button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_currentPage < 2) {
+                          _pageController.nextPage(
                             duration: Duration(milliseconds: 300),
                             curve: Curves.easeInOut,
                           );
-                        },
-                        child: Text(
-                          _localizations.translate('skip'),
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
+                        } else {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AuthScreen(languageCode: widget.languageCode),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
                         ),
-                      )
-                    else
-                      SizedBox(),
-                    SizedBox(),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                  children: pages,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    SmoothPageIndicator(
-                      controller: _pageController,
-                      count: 3,
-                      effect: WormEffect(
-                        dotColor: Colors.white24,
-                        activeDotColor: Color(0xFF00d4ff),
-                        dotHeight: 8,
-                        dotWidth: 8,
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        _currentPage < 2
+                            ? _localizations.translate('next')
+                            : _localizations.translate('get_started'),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                    SizedBox(height: 30),
+                  ),
+                  
+                  if (_currentPage < 2) SizedBox(height: 16),
+                  
+                  // Log in button
+                  if (_currentPage < 2)
                     SizedBox(
                       width: double.infinity,
                       height: 56,
-                      child: ElevatedButton(
+                      child: TextButton(
                         onPressed: () {
-                          if (_currentPage < 2) {
-                            _pageController.nextPage(
-                              duration: Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AuthScreen(languageCode: widget.languageCode),
-                              ),
-                            );
-                          }
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AuthScreen(languageCode: widget.languageCode),
+                            ),
+                          );
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF00d4ff),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
                         child: Text(
-                          _currentPage < 2
-                              ? _localizations.translate('next')
-                              : _localizations.translate('get_started'),
+                          _localizations.translate('login'),
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildPage({
-    required IconData icon,
     required String title,
     required String description,
   }) {
@@ -176,48 +169,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Placeholder for illustration
           Container(
-            width: 150,
-            height: 150,
+            width: 280,
+            height: 280,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF00d4ff),
-                  Color(0xFF0099ff),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0xFF00d4ff).withValues(alpha: 0.3),
-                  blurRadius: 40,
-                  spreadRadius: 10,
-                ),
-              ],
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(
-              icon,
-              size: 80,
-              color: Colors.white,
+            child: Center(
+              child: Icon(
+                Icons.image_outlined,
+                size: 80,
+                color: Colors.grey[400],
+              ),
             ),
           ),
-          SizedBox(height: 50),
+          
+          SizedBox(height: 60),
+          
           Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
-          SizedBox(height: 20),
+          
+          SizedBox(height: 16),
+          
           Text(
             description,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white70,
+              color: Colors.grey[600],
               height: 1.5,
             ),
           ),
