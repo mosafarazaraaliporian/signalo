@@ -57,8 +57,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: _isDarkMode ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: Color(0xFF0A0015),
-        systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarColor: _isDarkMode ? Color(0xFF0A0015) : Colors.white,
+        systemNavigationBarIconBrightness: _isDarkMode ? Brightness.light : Brightness.dark,
       ),
     );
 
@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             end: Alignment.bottomRight,
             colors: _isDarkMode
                 ? [Color(0xFF0A0015), Color(0xFF1A0B2E), Color(0xFF2D1B4E)]
-                : [Color(0xFFFAF5FF), Color(0xFFF3E8FF), Color(0xFFE9D5FF)],
+                : [Colors.white, Color(0xFFFAF5FF), Color(0xFFF5F0FF)],
           ),
         ),
         child: SafeArea(
@@ -123,20 +123,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 builder: (context, child) {
                   return ShaderMask(
                     shaderCallback: (bounds) => LinearGradient(
-                      colors: [
-                        Color(0xFFFFD700),
-                        Color(0xFFFFE55C),
-                        Color(0xFFFFD700),
-                        Color(0xFF9D4EDD),
-                        Color(0xFF7B2CBF),
-                      ],
-                      stops: [
-                        _animationController.value - 0.3,
-                        _animationController.value - 0.1,
-                        _animationController.value,
-                        _animationController.value + 0.1,
-                        _animationController.value + 0.3,
-                      ].map((e) => e.clamp(0.0, 1.0)).toList(),
+                      colors: [Color(0xFF9D4EDD), Color(0xFF7B2CBF), Color(0xFF5A189A)],
                     ).createShader(bounds),
                     child: Text(
                       'Signalo',
@@ -325,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 children: [
                   _buildStatItem('85%', isRTL ? 'موفق' : 'Success', Color(0xFF10B981)),
                   _buildStatItem('24', isRTL ? 'فعال' : 'Active', Color(0xFF9D4EDD)),
-                  _buildStatItem('156', isRTL ? 'کل' : 'Total', Color(0xFFFFD700)),
+                  _buildStatItem('156', isRTL ? 'کل' : 'Total', Color(0xFF3B82F6)),
                 ],
               ),
             ],
@@ -420,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           height: 60.h,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFFFD700), Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
+              colors: [Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
             ),
             borderRadius: BorderRadius.circular(18.r),
             boxShadow: [

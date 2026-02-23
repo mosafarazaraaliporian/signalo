@@ -20,31 +20,18 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 70.h,
+      decoration: BoxDecoration(
+        color: isDarkMode ? Color(0xFF1A0B2E) : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF9D4EDD).withValues(alpha: isDarkMode ? 0.3 : 0.1),
+            blurRadius: 20,
+            offset: Offset(0, -5),
+          ),
+        ],
+      ),
       child: Stack(
         children: [
-          // Base layer with gradient
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF1A0B2E),
-                    Color(0xFF0A0015),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFF9D4EDD).withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: Offset(0, -5),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
           // Glass layer
           Positioned.fill(
             child: ClipRRect(
@@ -55,10 +42,15 @@ class CustomBottomNavBar extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withValues(alpha: 0.1),
-                        Colors.white.withValues(alpha: 0.05),
-                      ],
+                      colors: isDarkMode
+                          ? [
+                              Colors.white.withValues(alpha: 0.05),
+                              Colors.white.withValues(alpha: 0.02),
+                            ]
+                          : [
+                              Colors.white.withValues(alpha: 0.9),
+                              Colors.white.withValues(alpha: 0.7),
+                            ],
                     ),
                   ),
                 ),
@@ -66,12 +58,13 @@ class CustomBottomNavBar extends StatelessWidget {
             ),
           ),
           
-          // Purple-Gold wave indicator
+          // Purple wave indicator
           CustomPaint(
             size: Size(MediaQuery.of(context).size.width, 70.h),
-            painter: LuxuryWavePainter(
+            painter: PurpleWavePainter(
               currentIndex: currentIndex,
               itemCount: 3,
+              isDarkMode: isDarkMode,
             ),
           ),
           
@@ -112,31 +105,24 @@ class CustomBottomNavBar extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: isSelected
                       ? LinearGradient(
-                          colors: [
-                            Color(0xFFFFD700),
-                            Color(0xFF9D4EDD),
-                            Color(0xFF7B2CBF),
-                          ],
+                          colors: [Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
                         )
                       : null,
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: Color(0xFF9D4EDD).withValues(alpha: 0.6),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                          ),
-                          BoxShadow(
-                            color: Color(0xFFFFD700).withValues(alpha: 0.4),
+                            color: Color(0xFF9D4EDD).withValues(alpha: 0.5),
                             blurRadius: 15,
-                            spreadRadius: 1,
+                            spreadRadius: 2,
                           ),
                         ]
                       : [],
                 ),
                 child: Icon(
                   icon,
-                  color: Colors.white,
+                  color: isSelected
+                      ? Colors.white
+                      : (isDarkMode ? Colors.white.withValues(alpha: 0.5) : Colors.black54),
                   size: isSelected ? 26.sp : 22.sp,
                 ),
               ),
@@ -148,13 +134,15 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 }
 
-class LuxuryWavePainter extends CustomPainter {
+class PurpleWavePainter extends CustomPainter {
   final int currentIndex;
   final int itemCount;
+  final bool isDarkMode;
 
-  LuxuryWavePainter({
+  PurpleWavePainter({
     required this.currentIndex,
     required this.itemCount,
+    required this.isDarkMode,
   });
 
   @override
@@ -162,33 +150,19 @@ class LuxuryWavePainter extends CustomPainter {
     final itemWidth = size.width / itemCount;
     final centerX = (currentIndex + 0.5) * itemWidth;
     
-    // Layer 1 - Gold glow
-    final goldGlowPaint = Paint()
-      ..color = Color(0xFFFFD700).withValues(alpha: 0.3)
-      ..style = PaintingStyle.fill
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 20);
-    
-    final goldGlowPath = _createWavePath(centerX, itemWidth, -24, 10);
-    canvas.drawPath(goldGlowPath, goldGlowPaint);
-    
-    // Layer 2 - Purple glow
-    final purpleGlowPaint = Paint()
-      ..color = Color(0xFF9D4EDD).withValues(alpha: 0.4)
+    // Layer 1 - Outer glow
+    final glowPaint = Paint()
+      ..color = Color(0xFF9D4EDD).withValues(alpha: isDarkMode ? 0.3 : 0.2)
       ..style = PaintingStyle.fill
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 15);
     
-    final purpleGlowPath = _createWavePath(centerX, itemWidth, -20, 8);
-    canvas.drawPath(purpleGlowPath, purpleGlowPaint);
+    final glowPath = _createWavePath(centerX, itemWidth, -22, 8);
+    canvas.drawPath(glowPath, glowPaint);
     
-    // Layer 3 - Main gradient wave
+    // Layer 2 - Main wave
     final mainPaint = Paint()
       ..shader = LinearGradient(
-        colors: [
-          Color(0xFFFFD700),
-          Color(0xFFFFE55C),
-          Color(0xFF9D4EDD),
-          Color(0xFF7B2CBF),
-        ],
+        colors: [Color(0xFF9D4EDD), Color(0xFF7B2CBF)],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
@@ -197,16 +171,9 @@ class LuxuryWavePainter extends CustomPainter {
     final mainPath = _createWavePath(centerX, itemWidth, -18, 6);
     canvas.drawPath(mainPath, mainPaint);
     
-    // Layer 4 - Inner highlight
+    // Layer 3 - Inner highlight
     final highlightPaint = Paint()
-      ..shader = LinearGradient(
-        colors: [
-          Colors.white.withValues(alpha: 0.6),
-          Colors.white.withValues(alpha: 0.2),
-        ],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..color = Colors.white.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
     
     final highlightPath = _createWavePath(centerX, itemWidth, -16, 4);
@@ -254,7 +221,7 @@ class LuxuryWavePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(LuxuryWavePainter oldDelegate) {
+  bool shouldRepaint(PurpleWavePainter oldDelegate) {
     return oldDelegate.currentIndex != currentIndex;
   }
 }
